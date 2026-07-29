@@ -71,16 +71,25 @@
         .law-title {
             font-size: 18px;
             font-weight: bold;
-            margin: 0 0 12px 0;
+            margin: 0 0 10px 0;
             color: #1e293b;
             line-height: 1.4;
+        }
+        .law-clause {
+            background-color: #f1f5f9;
+            border-left: 4px solid #94a3b8;
+            padding: 8px 12px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #475569;
+            font-weight: 600;
         }
         .law-desc {
             line-height: 1.6;
             color: #475569;
             margin: 0;
             font-size: 15px;
-            white-space: pre-line; /* 줄바꿈 인식을 위해 추가 */
+            white-space: pre-line;
         }
     </style>
 </head>
@@ -88,9 +97,8 @@
 
     <h1>📚 인턴 실무 법률 아카이브</h1>
     
-    <input type="text" id="searchInput" class="search-box" placeholder="검색어 또는 법률명을 입력하세요 (예: 육아휴직, 중대재해)...">
+    <input type="text" id="searchInput" class="search-box" placeholder="검색어 또는 법률명을 입력하세요 (예: 제19조, 육아휴직)...">
     
-    <!-- 카테고리가 새롭게 분류되었습니다 -->
     <div class="category-filters" id="filters">
         <button class="filter-btn active" data-category="전체">전체</button>
         <button class="filter-btn" data-category="남녀고용평등법">남녀고용평등법</button>
@@ -102,47 +110,61 @@
     <div id="lawList"></div>
 
     <script>
-        // 제공해주신 법률 내용들을 카테고리별로 분류하여 요약했습니다.
+        // 법령(clause) 항목이 추가된 데이터입니다.
         const laws = [
             {
                 title: "단기 육아휴직 신설 (2026.08.20 시행)",
                 category: "남녀고용평등법",
-                description: "2026년 8월 20일부터 연 1회, 1주(7일) 또는 2주(14일) 단위로 짧게 육아휴직을 사용할 수 있으며, 기간에 맞춰 급여가 환산 지급됩니다[cite: 1]. 사용한 단기 육아휴직 기간은 전체 육아휴직 총 기간에서 차감됩니다[cite: 1]."
+                clause: "남녀고용평등법 제19조 6,7,8,9항[cite: 1]",
+                description: "2026년 8월 20일부터 연 1회, 1주(7일) 또는 2주(14일) 단위로 짧게 육아휴직을 사용할 수 있으며, 기간에 맞춰 육아휴직급여를 환산하여 지급합니다[cite: 1]. 사용한 단기 육아휴직 기간(1~2주)은 전체 육아휴직 총 기간에서 차감되나, 육아휴직 분할 사용 횟수에는 차감되지 않습니다[cite: 1]."
             },
             {
-                title: "남성 육아휴직 출생 전 사용 및 배우자 출산전후휴가 확대 (2026.09.18 시행)",
+                title: "남성 육아휴직 출생 전 사용 및 배우자 출산전후휴가 확대",
                 category: "남녀고용평등법",
-                description: "배우자가 임신 중이며 유산 등의 위험이 있는 경우, 남성 근로자도 배우자 출산 전에 육아휴직을 사용할 수 있습니다[cite: 1]. 또한, 배우자 출산전후휴가는 출산예정일 50일 전부터 사용이 가능해집니다[cite: 1]."
+                clause: "남녀고용평등법 제19조 1항, 제18조의2[cite: 1]",
+                description: "배우자가 임신 중이며 유산이나 조산 등의 위험이 있어 돌봄이 필요한 경우, 남성 근로자도 배우자 출산 전에 육아휴직을 사용할 수 있습니다 (2026.09.18 시행)[cite: 1]. 또한, 배우자 출산전후휴가는 출산예정일 50일 전부터 사용이 가능해집니다[cite: 1]."
             },
             {
-                title: "배우자 유산·사산휴가 및 난임치료휴가 확대",
+                title: "배우자 유산·사산휴가 신설 및 난임치료휴가 확대",
                 category: "남녀고용평등법",
-                description: "2026년 9월부터 배우자가 유산 또는 사산한 날부터 20일 이내 청구 시 최대 5일(최초 3일 유급)의 휴가가 부여됩니다[cite: 1]. 또한 2026년 11월부터 난임치료휴가의 유급 보장 일수가 연간 최초 2일에서 4일로 확대됩니다[cite: 1]."
+                clause: "남녀고용평등법 제18조의4, 제18조의3[cite: 1]",
+                description: "배우자가 유산 또는 사산한 날부터 20일 이내 청구 시 최대 5일(최초 3일 유급)의 휴가가 부여됩니다 (2026.09.18 시행)[cite: 1]. 또한 2026년 11월 27일부터 난임치료휴가의 유급 보장 일수가 연간 최초 2일에서 4일로 확대됩니다[cite: 1]."
             },
             {
-                title: "불법파견 및 위장도급 판단 기준",
+                title: "불법파견 및 위장도급 판단",
                 category: "도급/파견",
-                description: "형식적으로는 도급계약이더라도, 원청이 수급업체의 근로자에게 직접 작업량과 방법을 지시하고 근태를 관리하는 등 실질적 독립성을 갖추지 못했다면 불법파견 또는 묵시적 근로계약 관계로 판단될 수 있습니다[cite: 2]. 파견법에 따라 근속년수가 2년이 넘는 경우 원청에 고용된 것으로 간주될 수 있습니다[cite: 2]."
+                clause: "파견법 (근로자파견사업 관련)[cite: 2]",
+                description: "형식은 도급 형태이지만, 실질적으로 업무수행과 사업경영의 독립성을 갖추지 못하고 원청이 직접 노무 지휘를 하는 경우 불법파견 또는 묵시적 근로계약 관계로 판단됩니다[cite: 2]. 파견법에 따라 근속년수가 2년이 넘는 경우 근로자가 사용사업주에 고용된 것으로 봅니다[cite: 2]."
             },
             {
                 title: "노동조합 및 노동관계조정법 (노란봉투법)",
                 category: "노사관계",
-                description: "노동쟁의를 예방하고 산업평화를 유지하기 위해 단결권, 단체교섭권, 단체행동권을 보장합니다[cite: 3]. 현 정부의 방침과 관련된 노란봉투법 개정은 하청 근로조건에 실질적인 지배력을 갖는 원청을 사용자로 간주하여 사용자 개념을 확대하는 것을 핵심으로 합니다[cite: 3]."
+                clause: "노동조합 및 노동관계조정법[cite: 3]",
+                description: "근로자의 단결권, 단체교섭권, 단체행동권을 보장하여 노동쟁의를 예방하고 산업평화를 유지하는 목적의 법률입니다[cite: 3]. 현 정부 방침과 관련된 노조법 개정(노란봉투법)은 하청 근로조건에 실질적인 지배력을 갖는 원청을 사용자로 간주하고 손해배상 책임을 제한하는 것이 핵심입니다[cite: 3]."
             },
             {
                 title: "근로자참여 및 협력증진에 관한 법률",
                 category: "노사관계",
-                description: "상시 30명 이상의 근로조건에 대한 결정권이 있는 사업장에서는 근로자와 사용자가 같은 수(각 3~10명)로 구성된 노사협의회를 설치하여 인사, 복지, 경영 관련 사항을 협의해야 합니다[cite: 3]."
+                clause: "근로자참여 및 협력증진에 관한 법률[cite: 3]",
+                description: "근로조건에 대한 결정권이 있는 사업장 단위(상시 30명 미만은 예외)에서 노사협의회를 구성해야 합니다[cite: 3]. 근로자와 사용자가 각 3명 이상 10명 이하의 같은 수로 구성되어 경영, 인사, 복지 등을 협의합니다[cite: 3]."
             },
             {
-                title: "산업안전보건법 및 2026년 개정 방향",
-                category: "산업안전",
-                description: "산업재해 예방을 위한 법률로, 2026년에는 주요 기업 등에 매년 안전보건현황 공시 의무가 신설되며 위험성평가에 근로자대표 참여를 보장하고 미실시 사업주에게 과태료를 부과하는 등 이행력이 강화될 예정입니다[cite: 4]."
+                title: "근로기준법",
+                category: "노사관계",
+                clause: "근로기준법[cite: 3]",
+                description: "근로자의 기본적 생활을 보장하기 위해 최소한의 대우 조건을 규정합니다[cite: 3]. 근로시간은 1주 간 휴게시간을 제외하고 40시간, 1일 8시간을 초과할 수 없으며, 정당한 이유 없이 부당해고가 불가능합니다[cite: 3]."
             },
             {
-                title: "중대재해처벌법 요건 및 처벌 수위",
+                title: "산업안전보건법 및 2026년 정부 방향",
                 category: "산업안전",
-                description: "상시 근로자 5인 이상의 모든 사업장에 적용되며, 안전보건 조치의무를 위반하여 사망자 1명 이상 발생하는 등 중대산업재해가 일어날 경우, 개인사업주 또는 경영책임자는 1년 이상의 징역 또는 10억 원 이하의 벌금에 처해질 수 있습니다[cite: 4]."
+                clause: "산업안전보건법[cite: 4]",
+                description: "사업장 내 위험 요소 사전 제거 및 안전보건관리체계 구축을 목적으로 합니다[cite: 4]. 안전·보건조치 위반으로 사망 시 개인사업주 또는 경영책임자는 7년 이하 징역 또는 1억원 이하 벌금에 처합니다[cite: 4]. 2026년에는 주요 기업에 안전보건현황 공시 의무가 신설되며 위험성평가에 근로자대표 참여를 보장해야 합니다[cite: 4]."
+            },
+            {
+                title: "중대재해처벌법",
+                category: "산업안전",
+                clause: "중대재해처벌법[cite: 4]",
+                description: "상시 근로자 5인 이상의 모든 사업장에 적용됩니다[cite: 4]. 사망자가 1명 이상 발생하거나 동일 사고로 6개월 이상 치료가 필요한 부상자가 2명 이상 발생하는 등 중대산업재해 발생 시, 개인사업주 또는 경영책임자는 1년 이상 징역 또는 10억원 이하 벌금에 처해질 수 있습니다[cite: 4]."
             }
         ];
 
@@ -156,7 +178,11 @@
             
             const filteredLaws = laws.filter(law => {
                 const matchCategory = currentCategory === '전체' || law.category === currentCategory;
-                const matchSearch = law.title.toLowerCase().includes(searchTerm) || law.description.toLowerCase().includes(searchTerm);
+                const matchSearch = 
+                    law.title.toLowerCase().includes(searchTerm) || 
+                    law.description.toLowerCase().includes(searchTerm) ||
+                    law.clause.toLowerCase().includes(searchTerm); // 법령 조항으로도 검색 가능하도록 추가
+                
                 return matchCategory && matchSearch;
             });
 
@@ -169,6 +195,7 @@
                 <div class="law-card">
                     <span class="law-category">${law.category}</span>
                     <h2 class="law-title">${law.title}</h2>
+                    <div class="law-clause">📖 ${law.clause}</div>
                     <p class="law-desc">${law.description}</p>
                 </div>
             `).join('');
@@ -185,7 +212,6 @@
             });
         });
 
-        // 처음 화면 로딩 시 데이터 뿌려주기
         renderLaws();
     </script>
 </body>
