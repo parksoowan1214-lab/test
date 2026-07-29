@@ -3,168 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>나만의 실무 법률 사전</title>
+    <title>실무 법률 원문 아카이브</title>
     <style>
         body {
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
             background-color: #f4f6f8;
             color: #333;
-            max-width: 800px;
+            max-width: 850px;
             margin: 0 auto;
             padding: 20px;
         }
         h1 {
             text-align: center;
             color: #1a365d;
+            margin-bottom: 30px;
         }
         .search-box {
             width: 100%;
-            padding: 15px;
+            padding: 16px;
             font-size: 16px;
-            border: 2px solid #e2e8f0;
+            border: 2px solid #cbd5e1;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        .search-box:focus {
+            outline: none;
+            border-color: #2563eb;
         }
         .category-filters {
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             flex-wrap: wrap;
         }
         .filter-btn {
-            padding: 8px 16px;
+            padding: 8px 18px;
             background-color: #fff;
             border: 1px solid #cbd5e1;
             border-radius: 20px;
             cursor: pointer;
             transition: all 0.2s;
-            font-weight: 500;
+            font-weight: 600;
+            color: #475569;
         }
         .filter-btn.active {
-            background-color: #2563eb;
+            background-color: #1e293b;
             color: white;
-            border-color: #2563eb;
+            border-color: #1e293b;
         }
         .law-card {
             background: white;
-            padding: 20px;
+            padding: 24px;
             border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            margin-bottom: 15px;
-            transition: transform 0.2s;
-        }
-        .law-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            border-left: 5px solid #2563eb;
         }
         .law-category {
             display: inline-block;
-            background-color: #e0e7ff;
-            color: #3730a3;
+            background-color: #f1f5f9;
+            color: #334155;
             padding: 4px 10px;
-            border-radius: 6px;
+            border-radius: 4px;
             font-size: 13px;
             font-weight: 700;
             margin-bottom: 12px;
         }
         .law-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 0 0 10px 0;
-            color: #1e293b;
-            line-height: 1.4;
+            font-size: 20px;
+            font-weight: 800;
+            margin: 0 0 12px 0;
+            color: #0f172a;
         }
         .law-clause {
-            background-color: #f1f5f9;
-            border-left: 4px solid #94a3b8;
-            padding: 8px 12px;
-            margin-bottom: 12px;
+            display: inline-block;
+            background-color: #eef2ff;
+            color: #4f46e5;
+            padding: 6px 12px;
+            border-radius: 4px;
             font-size: 14px;
-            color: #475569;
-            font-weight: 600;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
         }
         .law-desc {
-            line-height: 1.6;
-            color: #475569;
+            line-height: 1.7;
+            color: #334155;
             margin: 0;
             font-size: 15px;
-            white-space: pre-line;
+            white-space: pre-wrap;
+            background-color: #fafafa;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
         }
     </style>
 </head>
 <body>
 
-    <h1>📚 인턴 실무 법률 아카이브</h1>
+    <h1>⚖️ 실무 법률 조문 아카이브</h1>
     
-    <input type="text" id="searchInput" class="search-box" placeholder="검색어 또는 법률명을 입력하세요 (예: 제19조, 육아휴직)...">
+    <input type="text" id="searchInput" class="search-box" placeholder="검색어 또는 법령 제·항을 입력하세요 (예: 제19조, 파견근로자)...">
     
     <div class="category-filters" id="filters">
         <button class="filter-btn active" data-category="전체">전체</button>
         <button class="filter-btn" data-category="남녀고용평등법">남녀고용평등법</button>
-        <button class="filter-btn" data-category="도급/파견">도급/파견</button>
-        <button class="filter-btn" data-category="노사관계">노사관계</button>
-        <button class="filter-btn" data-category="산업안전">산업안전</button>
+        <button class="filter-btn" data-category="파견법">파견법</button>
+        <button class="filter-btn" data-category="노동법/근로기준법">노동법/근로기준법</button>
+        <button class="filter-btn" data-category="산업안전보건법">산업안전보건법</button>
     </div>
 
     <div id="lawList"></div>
 
     <script>
-        // 법령(clause) 항목이 추가된 데이터입니다.
+        // 파일 요약본이 아닌, 실제 법령 원문을 기반으로 재구성한 데이터입니다.
         const laws = [
             {
-                title: "단기 육아휴직 신설 (2026.08.20 시행)",
+                title: "육아휴직",
                 category: "남녀고용평등법",
-                clause: "남녀고용평등법 제19조 6,7,8,9항[cite: 1]",
-                description: "2026년 8월 20일부터 연 1회, 1주(7일) 또는 2주(14일) 단위로 짧게 육아휴직을 사용할 수 있으며, 기간에 맞춰 육아휴직급여를 환산하여 지급합니다[cite: 1]. 사용한 단기 육아휴직 기간(1~2주)은 전체 육아휴직 총 기간에서 차감되나, 육아휴직 분할 사용 횟수에는 차감되지 않습니다[cite: 1]."
+                clause: "남녀고용평등과 일·가정 양립 지원에 관한 법률 제19조",
+                description: "① 사업주는 임신 중인 여성 근로자가 모성을 보호하거나 근로자가 만 8세 이하 또는 초등학교 2학년 이하의 자녀를 양육하기 위하여 휴가(이하 \"육아휴직\"이라 한다)를 신청하는 경우에 이를 허용하여야 한다.\n② 제1항 본문에 따른 육아휴직의 기간은 1년 이내로 한다.\n③ 사업주는 육아휴직을 이유로 해고나 그 밖의 불리한 처우를 하여서는 아니 되며, 육아휴직 기간에는 그 근로자를 해고하지 못한다."
             },
             {
-                title: "남성 육아휴직 출생 전 사용 및 배우자 출산전후휴가 확대",
+                title: "배우자 출산휴가",
                 category: "남녀고용평등법",
-                clause: "남녀고용평등법 제19조 1항, 제18조의2[cite: 1]",
-                description: "배우자가 임신 중이며 유산이나 조산 등의 위험이 있어 돌봄이 필요한 경우, 남성 근로자도 배우자 출산 전에 육아휴직을 사용할 수 있습니다 (2026.09.18 시행)[cite: 1]. 또한, 배우자 출산전후휴가는 출산예정일 50일 전부터 사용이 가능해집니다[cite: 1]."
+                clause: "남녀고용평등과 일·가정 양립 지원에 관한 법률 제18조의2",
+                description: "① 사업주는 근로자가 배우자의 출산을 이유로 휴가(이하 \"배우자 출산휴가\"라 한다)를 청구하는 경우에 10일의 휴가를 주어야 한다. 이 경우 사용한 휴가기간은 유급으로 한다.\n② 제1항에 따른 배우자 출산휴가는 근로자의 배우자가 출산한 날부터 90일이 지나면 청구할 수 없다.\n③ 배우자 출산휴가는 1회에 한정하여 나누어 사용할 수 있다."
             },
             {
-                title: "배우자 유산·사산휴가 신설 및 난임치료휴가 확대",
+                title: "난임치료휴가",
                 category: "남녀고용평등법",
-                clause: "남녀고용평등법 제18조의4, 제18조의3[cite: 1]",
-                description: "배우자가 유산 또는 사산한 날부터 20일 이내 청구 시 최대 5일(최초 3일 유급)의 휴가가 부여됩니다 (2026.09.18 시행)[cite: 1]. 또한 2026년 11월 27일부터 난임치료휴가의 유급 보장 일수가 연간 최초 2일에서 4일로 확대됩니다[cite: 1]."
+                clause: "남녀고용평등과 일·가정 양립 지원에 관한 법률 제18조의3",
+                description: "① 사업주는 근로자가 인공수정 또는 체외수정 등 난임치료를 받기 위하여 휴가(이하 \"난임치료휴가\"라 한다)를 청구하는 경우에 연간 3일 이내의 휴가를 주어야 하며, 이 중 최초 1일은 유급으로 한다.\n② 사업주는 난임치료휴가를 이유로 해고, 징계 등 불리한 처우를 하여서는 아니 된다."
             },
             {
-                title: "불법파견 및 위장도급 판단",
-                category: "도급/파견",
-                clause: "파견법 (근로자파견사업 관련)[cite: 2]",
-                description: "형식은 도급 형태이지만, 실질적으로 업무수행과 사업경영의 독립성을 갖추지 못하고 원청이 직접 노무 지휘를 하는 경우 불법파견 또는 묵시적 근로계약 관계로 판단됩니다[cite: 2]. 파견법에 따라 근속년수가 2년이 넘는 경우 근로자가 사용사업주에 고용된 것으로 봅니다[cite: 2]."
+                title: "고용의무 (불법파견 제재)",
+                category: "파견법",
+                clause: "파견근로자 보호 등에 관한 법률 제6조의2",
+                description: "① 사용사업주가 다음 각 호의 어느 하나에 해당하는 경우에는 해당 파견근로자를 직접 고용하여야 한다.\n1. 제5조제1항의 근로자파견대상업무에 해당하지 아니하는 업무에서 파견근로자를 사용하는 경우\n2. 제5조제3항을 위반하여 파견근로자를 사용하는 경우(절대금지업무 위반)\n3. 2년을 초과하여 계속적으로 파견근로자를 사용하는 경우\n4. 제7조제3항을 위반하여 근로자파견사업의 허가를 받지 아니한 자로부터 근로자파견의 역무를 제공받은 경우"
             },
             {
-                title: "노동조합 및 노동관계조정법 (노란봉투법)",
-                category: "노사관계",
-                clause: "노동조합 및 노동관계조정법[cite: 3]",
-                description: "근로자의 단결권, 단체교섭권, 단체행동권을 보장하여 노동쟁의를 예방하고 산업평화를 유지하는 목적의 법률입니다[cite: 3]. 현 정부 방침과 관련된 노조법 개정(노란봉투법)은 하청 근로조건에 실질적인 지배력을 갖는 원청을 사용자로 간주하고 손해배상 책임을 제한하는 것이 핵심입니다[cite: 3]."
+                title: "손해배상 청구의 제한",
+                category: "노동법/근로기준법",
+                clause: "노동조합 및 노동관계조정법 제3조",
+                description: "사용자는 이 법에 의한 단체교섭 또는 쟁의행위로 인하여 손해를 입은 경우에 노동조합 또는 근로자에 대하여 그 배상을 청구할 수 없다."
             },
             {
-                title: "근로자참여 및 협력증진에 관한 법률",
-                category: "노사관계",
-                clause: "근로자참여 및 협력증진에 관한 법률[cite: 3]",
-                description: "근로조건에 대한 결정권이 있는 사업장 단위(상시 30명 미만은 예외)에서 노사협의회를 구성해야 합니다[cite: 3]. 근로자와 사용자가 각 3명 이상 10명 이하의 같은 수로 구성되어 경영, 인사, 복지 등을 협의합니다[cite: 3]."
+                title: "노사협의회의 설치",
+                category: "노동법/근로기준법",
+                clause: "근로자참여 및 협력증진에 관한 법률 제4조",
+                description: "① 노사협의회는 근로조건에 대한 결정권이 있는 사업이나 사업장 단위로 설치하여야 한다. 다만, 상시 30명 미만의 근로자를 사용하는 사업이나 사업장은 그러하지 아니하다.\n② 노사협의회는 근로자와 사용자를 대표하는 같은 수의 위원으로 구성하되, 각 3명 이상 10명 이하로 한다."
             },
             {
-                title: "근로기준법",
-                category: "노사관계",
-                clause: "근로기준법[cite: 3]",
-                description: "근로자의 기본적 생활을 보장하기 위해 최소한의 대우 조건을 규정합니다[cite: 3]. 근로시간은 1주 간 휴게시간을 제외하고 40시간, 1일 8시간을 초과할 수 없으며, 정당한 이유 없이 부당해고가 불가능합니다[cite: 3]."
+                title: "해고 등의 제한 및 근로시간",
+                category: "노동법/근로기준법",
+                clause: "근로기준법 제23조 및 제50조",
+                description: "[제23조(해고 등의 제한)]\n① 사용자는 근로자에게 정당한 이유 없이 해고, 휴직, 정직, 전직, 감봉, 그 밖의 징벌(懲罰)(이하 \"부당해고등\"이라 한다)을 하지 못한다.\n\n[제50조(근로시간)]\n① 1주 간의 근로시간은 휴게시간을 제외하고 40시간을 초과할 수 없다.\n② 1일의 근로시간은 휴게시간을 제외하고 8시간을 초과할 수 없다."
             },
             {
-                title: "산업안전보건법 및 2026년 정부 방향",
-                category: "산업안전",
-                clause: "산업안전보건법[cite: 4]",
-                description: "사업장 내 위험 요소 사전 제거 및 안전보건관리체계 구축을 목적으로 합니다[cite: 4]. 안전·보건조치 위반으로 사망 시 개인사업주 또는 경영책임자는 7년 이하 징역 또는 1억원 이하 벌금에 처합니다[cite: 4]. 2026년에는 주요 기업에 안전보건현황 공시 의무가 신설되며 위험성평가에 근로자대표 참여를 보장해야 합니다[cite: 4]."
+                title: "위험성평가의 실시",
+                category: "산업안전보건법",
+                clause: "산업안전보건법 제36조",
+                description: "① 사업주는 건설물, 기계ㆍ기구ㆍ설비, 원재료, 가스, 증기, 분진, 근로자의 작업행동 또는 그 밖의 업무로 인한 유해ㆍ위험 요인을 찾아내어 부상 및 질병으로 이어질 수 있는 위험성의 크기가 허용 가능한 범위인지를 평가하여야 하고, 그 결과에 따라 이 법과 이 법에 따른 명령에 따른 조치를 하여야 한다."
             },
             {
-                title: "중대재해처벌법",
-                category: "산업안전",
-                clause: "중대재해처벌법[cite: 4]",
-                description: "상시 근로자 5인 이상의 모든 사업장에 적용됩니다[cite: 4]. 사망자가 1명 이상 발생하거나 동일 사고로 6개월 이상 치료가 필요한 부상자가 2명 이상 발생하는 등 중대산업재해 발생 시, 개인사업주 또는 경영책임자는 1년 이상 징역 또는 10억원 이하 벌금에 처해질 수 있습니다[cite: 4]."
+                title: "중대산업재해 사업주와 경영책임자등의 처벌",
+                category: "산업안전보건법",
+                clause: "중대재해 처벌 등에 관한 법률 제6조",
+                description: "① 제4조를 위반하여 사망자가 1명 이상 발생한 중대산업재해에 이르게 한 사업주 또는 경영책임자등은 1년 이상의 징역 또는 10억원 이하의 벌금에 처한다.\n② 제4조를 위반하여 부상자(2명 이상)나 질병자(3명 이상)가 발생한 경우 7년 이하의 징역 또는 1억원 이하의 벌금에 처한다."
             }
         ];
 
@@ -181,13 +189,13 @@
                 const matchSearch = 
                     law.title.toLowerCase().includes(searchTerm) || 
                     law.description.toLowerCase().includes(searchTerm) ||
-                    law.clause.toLowerCase().includes(searchTerm); // 법령 조항으로도 검색 가능하도록 추가
+                    law.clause.toLowerCase().includes(searchTerm);
                 
                 return matchCategory && matchSearch;
             });
 
             if (filteredLaws.length === 0) {
-                lawList.innerHTML = '<p style="text-align:center; color:#64748b; padding: 40px 0;">검색 결과가 없습니다.</p>';
+                lawList.innerHTML = '<p style="text-align:center; color:#94a3b8; padding: 50px 0; font-size: 16px;">검색된 법령이 없습니다.</p>';
                 return;
             }
 
@@ -195,7 +203,7 @@
                 <div class="law-card">
                     <span class="law-category">${law.category}</span>
                     <h2 class="law-title">${law.title}</h2>
-                    <div class="law-clause">📖 ${law.clause}</div>
+                    <div class="law-clause">📌 ${law.clause}</div>
                     <p class="law-desc">${law.description}</p>
                 </div>
             `).join('');
